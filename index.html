@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Scania NAMPO Savings Calculator</title>
+  <style>
+    :root{
+      --green:#0b5c4a;
+      --green2:#17785f;
+      --green3:#2aa17c;
+      --dark:#1c1c1c;
+      --muted:#5a5f5d;
+      --light:#f4f7f5;
+      --white:#ffffff;
+      --border:#dbe5e0;
+      --soft:#eef5f2;
+      --danger:#a94d4d;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      background:var(--light);
+      color:var(--dark);
+      font-family:Arial, Helvetica, sans-serif;
+    }
+    .wrap{
+      max-width:640px;
+      margin:0 auto;
+      padding:18px 14px 28px;
+    }
+    .card{
+      background:var(--white);
+      border-radius:20px;
+      box-shadow:0 10px 28px rgba(0,0,0,0.08);
+      overflow:hidden;
+    }
+    .hero{
+      background:linear-gradient(135deg, #0b5c4a 0%, #10352d 100%);
+      color:#fff;
+      padding:22px 18px 18px;
+    }
+    .eyebrow{
+      text-transform:uppercase;
+      letter-spacing:1.2px;
+      font-size:12px;
+      font-weight:700;
+      opacity:.9;
+      margin-bottom:8px;
+    }
+    h1{
+      margin:0 0 8px;
+      font-size:28px;
+      line-height:1.05;
+    }
+    .hero p{
+      margin:0;
+      font-size:14px;
+      line-height:1.45;
+      max-width:520px;
+      opacity:.95;
+    }
+    .body{
+      padding:18px;
+    }
+    .note{
+      background:#eef5f2;
+      border:1px solid #d8e6e0;
+      border-radius:14px;
+      padding:12px 14px;
+      font-size:13px;
+      color:var(--muted);
+      line-height:1.45;
+      margin-bottom:16px;
+    }
+    label{
+      display:block;
+      margin:14px 0 6px;
+      font-weight:700;
+      font-size:14px;
+    }
+    input{
+      width:100%;
+      padding:14px 12px;
+      border:1px solid var(--border);
+      border-radius:12px;
+      font-size:16px;
+      outline:none;
+    }
+    input:focus{
+      border-color:var(--green);
+    }
+    .btn-row{
+      display:flex;
+      gap:10px;
+      margin-top:18px;
+      flex-wrap:wrap;
+    }
+    button{
+      flex:1;
+      min-width:160px;
+      background:var(--green);
+      color:#fff;
+      border:none;
+      border-radius:12px;
+      padding:15px 16px;
+      font-size:16px;
+      font-weight:700;
+      cursor:pointer;
+    }
+    button.secondary{
+      background:#8e9b96;
+      color:#fff;
+    }
+    .link-buttons{
+      display:flex;
+      gap:10px;
+      margin-top:12px;
+      flex-wrap:wrap;
+    }
+    .link-buttons a{
+      flex:1;
+      min-width:180px;
+      text-align:center;
+      text-decoration:none;
+      background:#ffffff;
+      border:1px solid var(--border);
+      padding:12px 14px;
+      border-radius:12px;
+      font-weight:700;
+      color:var(--green);
+      font-size:14px;
+    }
+    .summary{
+      display:none;
+      margin-top:18px;
+      background:#f9fbfa;
+      border:1px solid var(--border);
+      border-radius:16px;
+      padding:16px;
+    }
+    .summary h2{
+      margin:0 0 12px;
+      font-size:20px;
+    }
+    .metric{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      padding:8px 0;
+      border-bottom:1px solid #e5ece8;
+      font-size:15px;
+    }
+    .metric:last-of-type{
+      border-bottom:none;
+    }
+    .scenario-grid{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:10px;
+      margin-top:14px;
+    }
+    .scenario{
+      border:1px solid var(--border);
+      border-radius:14px;
+      padding:12px;
+      background:#fff;
+    }
+    .scenario .title{
+      font-size:14px;
+      font-weight:700;
+      margin-bottom:6px;
+    }
+    .scenario .value{
+      font-size:24px;
+      font-weight:800;
+      color:var(--green);
+      margin-bottom:4px;
+    }
+    .scenario .sub{
+      font-size:13px;
+      color:var(--muted);
+      line-height:1.35;
+    }
+    .bars{
+      margin-top:18px;
+      background:#fff;
+      border:1px solid var(--border);
+      border-radius:16px;
+      padding:14px;
+    }
+    .bars h3{
+      margin:0 0 12px;
+      font-size:18px;
+    }
+    .bar-row{
+      margin:10px 0 14px;
+    }
+    .bar-label{
+      display:flex;
+      justify-content:space-between;
+      font-size:13px;
+      font-weight:700;
+      margin-bottom:6px;
+      gap:10px;
+    }
+    .track{
+      width:100%;
+      height:18px;
+      background:#e8efeb;
+      border-radius:999px;
+      overflow:hidden;
+    }
+    .fill{
+      height:100%;
+      border-radius:999px;
+      width:0%;
+    }
+    .fill.c1{background:var(--green3)}
+    .fill.c2{background:var(--green2)}
+    .fill.c3{background:var(--green)}
+    .talk-track{
+      margin-top:18px;
+      background:#0d3128;
+      color:#fff;
+      border-radius:16px;
+      padding:14px;
+    }
+    .talk-track h3{
+      margin:0 0 8px;
+      font-size:18px;
+    }
+    .talk-track p{
+      margin:0;
+      font-size:14px;
+      line-height:1.5;
+      opacity:.96;
+    }
+    .lead-capture{
+      margin-top:18px;
+      background:var(--soft);
+      border:1px solid #d8e6e0;
+      border-radius:16px;
+      padding:14px;
+    }
+    .lead-capture h3{
+      margin:0 0 6px;
+      font-size:18px;
+      color:var(--green);
+    }
+    .lead-capture p{
+      margin:0 0 10px;
+      font-size:13px;
+      color:var(--muted);
+      line-height:1.45;
+    }
+    .lead-status{
+      margin-top:10px;
+      font-size:13px;
+      font-weight:700;
+      color:var(--green);
+      display:none;
+    }
+    .download-row{
+      margin-top:10px;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .download-row button{
+      min-width:180px;
+    }
+    .download-row button.alt{
+      background:#2f6e5d;
+    }
+    .foot{
+      margin-top:16px;
+      font-size:12px;
+      color:#6a706e;
+      line-height:1.5;
+    }
+    @media (max-width: 520px){
+      .metric, .bar-label{
+        flex-direction:column;
+        align-items:flex-start;
+      }
+      button, .link-buttons a{
+        width:100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <div class="hero">
+        <div class="eyebrow">Scania Power Solutions | NAMPO</div>
+        <h1>Fuel Savings Calculator</h1>
+        <p>Directional estimate for show-floor discussions, using a Scania-backed expected case of 8% fuel improvement and comparison scenarios of 5% and 10%.</p>
+      </div>
+
+      <div class="body">
+        <div class="note">
+          Scania figures referenced in this model: up to 8% lower fuel consumption on the new 11/13-litre engine versus previous models, and up to 7% better fuel efficiency for Super 11 versus the 9-litre engine. The 50% efficiency target refers to engine efficiency, not direct customer fuel saving.
+        </div>
+
+        <label for="hours">Hours per day</label>
+        <input type="number" id="hours" placeholder="e.g. 10" />
+
+        <label for="days">Days per year</label>
+        <input type="number" id="days" placeholder="e.g. 120" />
+
+        <label for="lph">Litres per hour</label>
+        <input type="number" id="lph" placeholder="e.g. 15" step="0.1" />
+
+        <label for="price">Diesel price (R/litre)</label>
+        <input type="number" id="price" placeholder="e.g. 25" step="0.01" />
+
+        <div class="btn-row">
+          <button onclick="calculate()">Calculate Savings Range</button>
+          <button class="secondary" onclick="clearForm()">Clear Form</button>
+        </div>
+
+        <div class="link-buttons">
+          <a href="https://www.scania.com/za/en/home/products/power-solutions.html" target="_blank" rel="noopener noreferrer">Power Solutions</a>
+          <a href="https://www.scania.com/za/en/home/products/trucks.html" target="_blank" rel="noopener noreferrer">Trucks</a>
+        </div>
+
+        <div class="summary" id="summary">
+          <h2>Your Operating Cost</h2>
+          <div class="metric"><span>Annual fuel use</span><strong id="fuel"></strong></div>
+          <div class="metric"><span>Annual fuel cost</span><strong id="cost"></strong></div>
+
+          <div class="scenario-grid">
+            <div class="scenario">
+              <div class="title">Conservative scenario · 5%</div>
+              <div class="value" id="save5"></div>
+              <div class="sub" id="save5sub"></div>
+            </div>
+
+            <div class="scenario">
+              <div class="title">Expected Scania scenario · 8%</div>
+              <div class="value" id="save8"></div>
+              <div class="sub" id="save8sub"></div>
+            </div>
+
+            <div class="scenario">
+              <div class="title">Optimised system scenario · 10%</div>
+              <div class="value" id="save10"></div>
+              <div class="sub" id="save10sub"></div>
+            </div>
+          </div>
+
+          <div class="bars">
+            <h3>5-Year Savings View</h3>
+
+            <div class="bar-row">
+              <div class="bar-label"><span>5% Conservative</span><span id="five5label"></span></div>
+              <div class="track"><div class="fill c1" id="bar5"></div></div>
+            </div>
+
+            <div class="bar-row">
+              <div class="bar-label"><span>8% Expected</span><span id="five8label"></span></div>
+              <div class="track"><div class="fill c2" id="bar8"></div></div>
+            </div>
+
+            <div class="bar-row">
+              <div class="bar-label"><span>10% Optimised</span><span id="five10label"></span></div>
+              <div class="track"><div class="fill c3" id="bar10"></div></div>
+            </div>
+          </div>
+
+          <div class="talk-track">
+            <h3>Talk Track</h3>
+            <p id="talktrack"></p>
+          </div>
+
+          <div class="lead-capture">
+            <h3>Send the Result to the Client</h3>
+            <p>Capture the client's details on the stand and export a CSV file that you can open in Excel later for lead follow-up.</p>
+
+            <label for="clientName">Client name</label>
+            <input type="text" id="clientName" placeholder="e.g. Pieter van der Merwe" />
+
+            <label for="companyName">Farm / company</label>
+            <input type="text" id="companyName" placeholder="e.g. Green Valley Farms" />
+
+            <label for="clientPhone">Phone number</label>
+            <input type="text" id="clientPhone" placeholder="e.g. 082 123 4567" />
+
+            <label for="clientEmail">Email address</label>
+            <input type="email" id="clientEmail" placeholder="e.g. pieter@email.com" />
+
+            <label for="clientNotes">Notes / application</label>
+            <input type="text" id="clientNotes" placeholder="e.g. Irrigation pump, 10h/day, follow up next week" />
+
+            <div class="download-row">
+              <button onclick="downloadLeadCSV()">Save Lead + Results (.csv)</button>
+              <button class="alt" onclick="copySummary()">Copy Summary Text</button>
+            </div>
+
+            <div class="lead-status" id="leadStatus"></div>
+          </div>
+
+          <div class="foot">
+            Use this as a commercial discussion tool, not a guaranteed promise. Final fuel savings depend on duty cycle, load profile, application sizing, maintenance condition, and overall system setup.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let latestResult = null;
+
+    function formatNumber(value) {
+      return new Intl.NumberFormat('en-ZA', { maximumFractionDigits: 0 }).format(value);
+    }
+
+    function formatCurrency(value) {
+      return new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR', maximumFractionDigits: 0 }).format(value);
+    }
+
+    function calculate() {
+      const hours = parseFloat(document.getElementById('hours').value);
+      const days = parseFloat(document.getElementById('days').value);
+      const lph = parseFloat(document.getElementById('lph').value);
+      const price = parseFloat(document.getElementById('price').value);
+
+      if ([hours, days, lph, price].some(v => isNaN(v) || v <= 0)) {
+        alert('Please enter valid numbers in all fields.');
+        return;
+      }
+
+      const fuel = hours * days * lph;
+      const cost = fuel * price;
+
+      const save5 = cost * 0.05;
+      const save8 = cost * 0.08;
+      const save10 = cost * 0.10;
+
+      const five5 = save5 * 5;
+      const five8 = save8 * 5;
+      const five10 = save10 * 5;
+
+      latestResult = {hours, days, lph, price, fuel, cost, save5, save8, save10, five5, five8, five10};
+
+      document.getElementById('fuel').textContent = formatNumber(fuel) + ' L/year';
+      document.getElementById('cost').textContent = formatCurrency(cost) + '/year';
+
+      document.getElementById('save5').textContent = formatCurrency(save5) + '/year';
+      document.getElementById('save8').textContent = formatCurrency(save8) + '/year';
+      document.getElementById('save10').textContent = formatCurrency(save10) + '/year';
+
+      document.getElementById('save5sub').textContent = '5-year view: ' + formatCurrency(five5);
+      document.getElementById('save8sub').textContent = '5-year view: ' + formatCurrency(five8);
+      document.getElementById('save10sub').textContent = '5-year view: ' + formatCurrency(five10);
+
+      document.getElementById('five5label').textContent = formatCurrency(five5);
+      document.getElementById('five8label').textContent = formatCurrency(five8);
+      document.getElementById('five10label').textContent = formatCurrency(five10);
+
+      const max = Math.max(five5, five8, five10);
+      document.getElementById('bar5').style.width = (five5 / max * 100) + '%';
+      document.getElementById('bar8').style.width = (five8 / max * 100) + '%';
+      document.getElementById('bar10').style.width = (five10 / max * 100) + '%';
+
+      document.getElementById('talktrack').textContent =
+        'Based on your operating profile, your current fuel spend is about ' + formatCurrency(cost) +
+        ' per year. Using Scania’s expected case of about 8%, that points to a potential saving of ' +
+        formatCurrency(save8) + ' per year, or roughly ' + formatCurrency(five8) +
+        ' over 5 years. Even the conservative case still shows a worthwhile saving.';
+
+      document.getElementById('summary').style.display = 'block';
+      setLeadStatus('');
+    }
+
+    function clearForm() {
+      ['hours','days','lph','price','clientName','companyName','clientPhone','clientEmail','clientNotes'].forEach(id => {
+        document.getElementById(id).value = '';
+      });
+      ['bar5','bar8','bar10'].forEach(id => {
+        document.getElementById(id).style.width = '0%';
+      });
+      document.getElementById('summary').style.display = 'none';
+      latestResult = null;
+      setLeadStatus('');
+    }
+
+    function setLeadStatus(message) {
+      const el = document.getElementById('leadStatus');
+      if (!message) {
+        el.style.display = 'none';
+        el.textContent = '';
+      } else {
+        el.style.display = 'block';
+        el.textContent = message;
+      }
+    }
+
+    function downloadLeadCSV() {
+      if (!latestResult) {
+        alert('Please calculate the savings first.');
+        return;
+      }
+
+      const clientName = document.getElementById('clientName').value.trim();
+      const companyName = document.getElementById('companyName').value.trim();
+      const clientPhone = document.getElementById('clientPhone').value.trim();
+      const clientEmail = document.getElementById('clientEmail').value.trim();
+      const clientNotes = document.getElementById('clientNotes').value.trim();
+
+      if (!clientName && !companyName && !clientPhone && !clientEmail) {
+        alert('Please capture at least one client detail before saving the lead.');
+        return;
+      }
+
+      const rows = [
+        ['Date Saved', new Date().toLocaleString('en-ZA')],
+        ['Client Name', clientName],
+        ['Farm / Company', companyName],
+        ['Phone', clientPhone],
+        ['Email', clientEmail],
+        ['Notes / Application', clientNotes],
+        ['Hours per Day', latestResult.hours],
+        ['Days per Year', latestResult.days],
+        ['Litres per Hour', latestResult.lph],
+        ['Diesel Price (R/L)', latestResult.price],
+        ['Annual Fuel Use (L/year)', latestResult.fuel],
+        ['Annual Fuel Cost (R/year)', latestResult.cost],
+        ['Conservative Saving 5% (R/year)', latestResult.save5],
+        ['Expected Saving 8% (R/year)', latestResult.save8],
+        ['Optimised Saving 10% (R/year)', latestResult.save10],
+        ['5-Year Saving 5% (R)', latestResult.five5],
+        ['5-Year Saving 8% (R)', latestResult.five8],
+        ['5-Year Saving 10% (R)', latestResult.five10]
+      ];
+
+      const csvContent = rows.map(row =>
+        row.map(cell => '"' + String(cell).replace(/"/g, '""') + '"').join(',')
+      ).join('\n');
+
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      const safeName = (clientName || companyName || 'scania-lead').replace(/[^a-z0-9]+/gi, '_').toLowerCase();
+
+      link.setAttribute('href', url);
+      link.setAttribute('download', safeName + '_fuel_savings_lead.csv');
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      setLeadStatus('Lead CSV downloaded successfully.');
+    }
+
+    function copySummary() {
+      if (!latestResult) {
+        alert('Please calculate the savings first.');
+        return;
+      }
+
+      const clientName = document.getElementById('clientName').value.trim();
+      const companyName = document.getElementById('companyName').value.trim();
+      const clientPhone = document.getElementById('clientPhone').value.trim();
+      const clientEmail = document.getElementById('clientEmail').value.trim();
+      const clientNotes = document.getElementById('clientNotes').value.trim();
+
+      const summaryText =
+        'Scania NAMPO Fuel Savings Summary\n' +
+        'Client: ' + (clientName || '-') + '\n' +
+        'Farm / Company: ' + (companyName || '-') + '\n' +
+        'Phone: ' + (clientPhone || '-') + '\n' +
+        'Email: ' + (clientEmail || '-') + '\n' +
+        'Notes: ' + (clientNotes || '-') + '\n\n' +
+        'Operating Inputs\n' +
+        '- Hours per day: ' + latestResult.hours + '\n' +
+        '- Days per year: ' + latestResult.days + '\n' +
+        '- Litres per hour: ' + latestResult.lph + '\n' +
+        '- Diesel price: R' + latestResult.price + '/L\n\n' +
+        'Results\n' +
+        '- Annual fuel use: ' + formatNumber(latestResult.fuel) + ' L/year\n' +
+        '- Annual fuel cost: ' + formatCurrency(latestResult.cost) + '/year\n' +
+        '- 5% conservative saving: ' + formatCurrency(latestResult.save5) + '/year | 5-year: ' + formatCurrency(latestResult.five5) + '\n' +
+        '- 8% expected Scania saving: ' + formatCurrency(latestResult.save8) + '/year | 5-year: ' + formatCurrency(latestResult.five8) + '\n' +
+        '- 10% optimised saving: ' + formatCurrency(latestResult.save10) + '/year | 5-year: ' + formatCurrency(latestResult.five10);
+
+      navigator.clipboard.writeText(summaryText).then(function() {
+        setLeadStatus('Summary copied to clipboard.');
+      }).catch(function() {
+        alert('Could not copy automatically on this device.');
+      });
+    }
+  </script>
+</body>
+</html>
